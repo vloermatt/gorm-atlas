@@ -1,0 +1,18 @@
+name: Deploy Database Migrations
+on:
+  push:
+    branches:
+      - main
+      - develop
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ariga/setup-atlas@v0
+      - name: Deploy Atlas Migrations
+        uses: ariga/atlas-action/migrate/apply@v1
+        with:
+          url: postgresql://${{ vars.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_URL }}:${{ vars.DB_PORT }}/${{ vars.STAGE }}
+          dir: 'file://migrations'
